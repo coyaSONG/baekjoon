@@ -12,7 +12,7 @@ namespace baekjoon
         static void Main(string[] args)
         {
             DFS(0);
-            Console.WriteLine(res);
+            Console.WriteLine(result);
             sr.Close();
         }
 
