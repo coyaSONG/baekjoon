@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+      - name: Compile each solution
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$(mktemp -d)"
+          dotnet new console --framework net8.0 --output "$work" >/dev/null
+          while IFS= read -r -d '' file; do
+            cp "$file" "$work/Program.cs"
+            dotnet build "$work" --no-restore --nologo --verbosity quiet
+          done < <(find . -name '*.cs' -print0)
+
